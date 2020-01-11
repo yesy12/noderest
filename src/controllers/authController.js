@@ -70,7 +70,7 @@ router.post("/authenticate", async (req,res)=>{
             });
 
             res.send({
-                user
+                user,token
             });
         }
     }
