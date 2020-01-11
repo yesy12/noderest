@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const router = express.Router();
@@ -56,6 +57,9 @@ router.post("/authenticate", async (req,res)=>{
             })
         }
         else{
+
+            user.password = undefined;
+
             res.send({
                 user
             });
