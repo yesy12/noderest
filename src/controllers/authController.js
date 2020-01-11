@@ -18,6 +18,8 @@ router.post("/register", async (req,res) => {
             })
         }else{
             const user = await User.create(object);
+            
+            user.password = undefined;
 
             return res.send({ user });
         }
