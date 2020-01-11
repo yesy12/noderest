@@ -4,12 +4,26 @@ const router = express.Router();
 const User = require("../models/user");
 
 router.post("/register", async (req,res) => {
-    try{
-        const user = await User.create(req.body);
+    const { email, name, password } = req.body;
+    const object = {
+        email,
+        name,
+        password
+    }
 
-        return res.send({ user });
+    try{
+        if(await User.findOne({email})){
+            return res.send(400).send({
+                error : "User already exists"
+            })
+        }else{
+            const user = await User.create(object);
+
+            return res.send({ user });
+        }
     }
     catch( error){
+        console.log(error);
         return res.status(400).send({
             error : "Registration failed"
         });

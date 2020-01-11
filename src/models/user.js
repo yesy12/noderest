@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         require: true,
-        select : false
+        select : true
     },
     createdAt: {
         type: Date,
@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-UserSchema.pre("save", async (next) => {
+UserSchema.pre("save", async function(next){
     const hash = await bcrypt.hash(this.password, 15);
     this.password = hash;
     
