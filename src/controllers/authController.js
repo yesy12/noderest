@@ -22,10 +22,13 @@ router.post("/register", async (req,res) => {
             })
         }else{
             const user = await User.create(object);
-            
+        
             user.password = undefined;
 
-            return res.send({ user });
+            return res.send({ 
+                user,
+                token: generateToken({ id: user.id }) 
+            });
         }
     }
     catch( error){
@@ -35,6 +38,13 @@ router.post("/register", async (req,res) => {
         });
     }
 });
+
+function generateToken(params = {}){
+    return jwt.sign(params,
+    authConfig.secret,{
+        expiresIn : 180,
+    });
+}
 
 router.post("/authenticate", async (req,res)=>{
     const { email, password } = req.body;
@@ -62,12 +72,7 @@ router.post("/authenticate", async (req,res)=>{
 
             user.password = undefined;
 
-            const token = jwt.sign({
-                id : user.id
-            },
-            authConfig.secret,{
-                expiresIn : 180,
-            });
+            const token = generateToken({ id: user.id })
 
             res.send({
                 user,token
