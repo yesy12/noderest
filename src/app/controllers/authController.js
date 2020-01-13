@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const User = require("../models/user");
 const authConfig = require("../../config/auth");
@@ -46,7 +47,7 @@ function generateToken(params = {}){
     });
 }
 
-router.post("/authenticate", async (req,res)=>{
+router.post("/authenticate", async (req,res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ 
@@ -80,6 +81,38 @@ router.post("/authenticate", async (req,res)=>{
         }
     }
 
+})
+
+router.post("/forgot_password", async (req,res) => {
+    const { email } = req.body;
+
+    try{
+        const user = await User.findOne({
+            email
+        })
+
+        if(!user){
+            return res.status(400)
+            .send({
+                error : "User not found" 
+            });
+        }
+        else{
+
+            const token = crypto.randomBytes(20).toString("hex");
+
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+
+            
+        }
+    }
+    catch(err){
+        res.status(400)
+        .send({
+            error : "Erro on forgot password, try again" 
+        })
+    }
 })
 
 module.exports = router;
