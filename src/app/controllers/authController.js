@@ -129,8 +129,11 @@ router.post("/forgot_password", async (req,res) => {
             await mailer.sendMail({
                 to : email,
                 from : "alisonvieira.av29@gmail.com",
-                template : "./auth/forgot_password",
-                context: { token }
+                subject: "Hello ✔", // Subject line
+                text: "Hello world?", // plain text body
+                html: "<b>Hello world?</b>" // html body
+                // template : "./auth/forgot_password",
+                // context: { token }
             }, (err) => {
                 if(err){
                     return res.status(400)
