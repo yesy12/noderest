@@ -98,20 +98,19 @@ router.post("/forgot_password", async (req,res) => {
             .send({
                 error : "User not found" 
             });
-        }
+        }///////////////////////////////////////
         else{
-
             const token = crypto.randomBytes(20).toString("hex");
 
             const now = new Date();
             now.setHours(now.getHours() + 1);
 
-            /*
+        /*
             (node:3532) DeprecationWarning: Mongoose: `findOneAndUpdate()` and `findOneAndDelete()` 
             without the `useFindAndModify` option set to false are deprecated. 
             See: https://mongoosejs.com/docs/deprecations.html#-findandmodify-
-            */
-
+        */
+       
             await User.findByIdAndUpdate(user.id,{
                 "$set":{
                     "passwordResetToken" : token,
@@ -123,24 +122,33 @@ router.post("/forgot_password", async (req,res) => {
                 useFindAndModify: false 
             })////////////////////////
 
-            mailer.sendMail({
-                to: email,
+            // return res.send({
+            //                 ok: email
+            // })
+
+            await mailer.sendMail({
+                to : email,
                 from : "alisonvieira.av29@gmail.com",
-                template : "auth/forgot_password",
-                context: {token}
-            },(err) => {
+                template : "./auth/forgot_password",
+                context: { token }
+            }, (err) => {
                 if(err){
                     return res.status(400)
-                    .send({
-                        "error" : "Cannot send forgot password email"
+                        .send({
+                            "error" : "Cannot send forgot password email"
                     })
-                }else{
-                    return res.send()
+                }//////////////////
+                else{
+                    return res.send({
+                        ok: true
+                    })
                 }
             })
-        }
-    }
+        }///////////////////////////////////////
+
+    }///////////////////////////////////////
     catch(err){
+        console.log(err)
         res.status(400)
         .send({
             error : "Erro on forgot password, try again" 
