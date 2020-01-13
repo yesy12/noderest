@@ -8,7 +8,8 @@ router.use(authMiddleware);
 
 router.get("/",(req,res)=>{
     res.send({
-        ok : true
+        ok : true,
+        user : req.useId
     })
 })
 

@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
     else{
         const parts = authHeader.split(" ");
 
-        if(!parts.length === 2){
+        if(!(parts.length === 2) ){
             return res.status(401)
             .send({
                 error : "Token error"
@@ -24,9 +24,10 @@ module.exports = (req, res, next) => {
 
         else{
             const [ scheme, token] = parts;
+            console.log(parts);
 
-            if(!/^Bearer$^/i.test(scheme)){
-                console.log(scheme);
+            if((!/^Bearer$^/i.test(scheme)) === false){
+                
                 return res.status(401)
                 .send({
                     error: "Token malformatted"
