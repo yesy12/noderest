@@ -1,0 +1,12 @@
+em src/app/controllers/authController.js
+
+template : "./auth/forgot_password",
+context: { token }
+
+(node:3532) DeprecationWarning: Mongoose: `findOneAndUpdate()` and `findOneAndDelete()` 
+without the `useFindAndModify` option set to false are deprecated. 
+See: https://mongoosejs.com/docs/deprecations.html#-findandmodify-
+
+User.findByIdAndUpdate();
+
+em src/modules/mailer.js
