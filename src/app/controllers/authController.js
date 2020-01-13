@@ -5,6 +5,8 @@ const crypto = require("crypto");
 
 const User = require("../models/user");
 const authConfig = require("../../config/auth");
+const mailer = require("../../modules/mailer")
+
 
 const router = express.Router();
 
@@ -104,14 +106,38 @@ router.post("/forgot_password", async (req,res) => {
             const now = new Date();
             now.setHours(now.getHours() + 1);
 
+            /*
+            (node:3532) DeprecationWarning: Mongoose: `findOneAndUpdate()` and `findOneAndDelete()` 
+            without the `useFindAndModify` option set to false are deprecated. 
+            See: https://mongoosejs.com/docs/deprecations.html#-findandmodify-
+            */
+
             await User.findByIdAndUpdate(user.id,{
                 "$set":{
                     "passwordResetToken" : token,
                     "passwordResetExpires" : now
                 }
+            },
+            { 
+                new: true, 
+                useFindAndModify: false 
             })////////////////////////
 
-            console.log(token, now)
+            mailer.sendMail({
+                to: email,
+                from : "alisonvieira.av29@gmail.com",
+                template : "auth/forgot_password",
+                context: {token}
+            },(err) => {
+                if(err){
+                    return res.status(400)
+                    .send({
+                        "error" : "Cannot send forgot password email"
+                    })
+                }else{
+                    return res.send()
+                }
+            })
         }
     }
     catch(err){
