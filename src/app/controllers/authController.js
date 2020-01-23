@@ -77,7 +77,7 @@ router.post("/authenticate", async (req,res) => {
 
             const token = generateToken({ id: user.id })
 
-            res.send({
+            return res.send({
                 user,token
             });
         }
@@ -129,9 +129,9 @@ router.post("/forgot_password", async (req,res) => {
             await mailer.sendMail({
                 to : email,
                 from : "alisonvieira.av29@gmail.com",
-                subject: "Hello ✔", // Subject line
+                subject: "Forgot Password", // Subject line
                 text: "Hello world?", // plain text body
-                html: "<b>Hello world?</b>" // html body
+                html: `<b>Por enquanto acesse esse token, ${token}, corrigiremos isso no futuro </b>` // html body
                 // template : "./auth/forgot_password",
                 // context: { token }
             }, (err) => {
@@ -152,11 +152,65 @@ router.post("/forgot_password", async (req,res) => {
     }///////////////////////////////////////
     catch(err){
         console.log(err)
-        res.status(400)
+        return res.status(400)
         .send({
             error : "Erro on forgot password, try again" 
         })
     }
+})
+
+router.post("/reset_password", async (req,res) =>{
+    const { email, token, password } = req.body;
+
+    try {
+
+        const user = await User.findOne({
+            email
+        }).select("+passwordResetToken passwordResetExpires");
+
+        if(!user){
+            return res.send({
+                error : "User not exists"
+            })
+        }
+        else{
+
+            if(token !== user.passwordResetToken){
+                return res.status(400)
+                    .send({
+                        error : "token invalid"
+                    })
+            }
+            else {
+                const now = new Date();
+
+                if(now > user.passwordResetExpires){
+                    return res.status(400)
+                        .send({
+                            error : "Token expired, generate a new one"
+                        });
+                }else{
+
+                    user.password = password; 
+                    
+                    await user.save();
+
+                    return res.send({
+                        ok : true
+                    })
+                }
+            }
+        }
+    }
+
+    catch ( err) {
+        return res.status(400)
+            .send({
+                error : "Cannot reset password, try again"
+            });
+    }
+
+
 })
 
 module.exports = router;
